@@ -11,15 +11,6 @@
 % clear xte yte;
 
 function [Acc,Sen,Spe,Auc]=ruantiao(x,y,xt,yt,seed,afa,gama,emxil,eta,lamada,deta,hs)
-rng(seed);
-%  afa=0.1;
-% gama=10;%100
-% emxil=0.5;
-% eta=0.7;
-%  lamada=1;
-%  hs=4;
-p=10;
-
 for i=1:3
     xt2=x{i};
     xte2=xt{i};
@@ -31,15 +22,11 @@ for i=1:3
     xtb{i}=xte2;
 end
 x=xb;xt=xtb;
-% x±íÊ¾ÑµÁ·¼¯ xt±íÊ¾²âÊÔ¼¯
-% ¾ùÎª×ªÖÃºóµÄ½á¹û
-
-options.k =5;
+% xè¡¨ç¤ºè®­ç»ƒé›† xtè¡¨ç¤ºæµ‹è¯•é›†
+% å‡ä¸ºè½¬ç½®åçš„ç»“æœ
 set=3;
 
-%  afa=0.0001;
-
-%% ³õÊ¼»¯
+%% åˆå§‹åŒ–
 aa=x{1};
 [m1,n1] = size(x{1});
 % s=rand(length(aa(:,1)),length(aa(:,1)));
@@ -68,9 +55,9 @@ end
 h=rand(hs,m1);
 
 
-%% Ëã·¨µü´ú
+%% ç®—æ³•è¿­ä»£
 for iii=1:4
-    %Çówv
+    %æ±‚wv
     for i=1:set
         [mi,~] = size(x{i});
         wa = gengxinu(w{i});
@@ -81,7 +68,7 @@ for iii=1:4
         w{i} = -1/2*(cv\bv);
     end
 
-    %Çóqv
+    %æ±‚qv
     for i=1:set
 %         for j=1:p
             aa=Q{i};
@@ -100,7 +87,7 @@ for iii=1:4
 %         end
     end
 
-    %Çósita
+    %æ±‚sita
     si=x{1};
 
     for i=1:set
@@ -114,11 +101,11 @@ for iii=1:4
 
     end
 
-    % ÇóR
+    % æ±‚R
 
     R=y'*h'*pinv((h*h'+eye(length(h(:,1)))));
 
-    %Çóh
+    %æ±‚h
 
     p1=zeros(hs,length(si(:,1)));
 
@@ -128,7 +115,7 @@ for iii=1:4
     %  sss=(R*y'+afa*p);
     h=pinv(R'*R+2*eye(length(R(1,:))))*(R'*y'+afa*p1);
 
-    %%%%ÇóS
+    %%%%æ±‚S
     dim = size(s,2);
 %     di=zeros(length(s(1,:)),length(s(1,:)));
     sumd = zeros(dim);
@@ -184,13 +171,13 @@ end
 
 
 %mdl = fitcknn(Hall', y(:,1), 'NumNeighbors', 5);
-% Ê¹ÓÃÖ§³ÖÏòÁ¿»ú½øĞĞ·ÖÀà
+% ä½¿ç”¨æ”¯æŒå‘é‡æœºè¿›è¡Œåˆ†ç±»
 mdl = fitcsvm(Hall', y(:,1), 'KernelFunction', 'rbf', 'Standardize', true);
 
-% Ô¤²â²âÊÔ¼¯µÄ½á¹û
+% é¢„æµ‹æµ‹è¯•é›†çš„ç»“æœ
 pred_labels = predict(mdl, Hallt');
 
-% ¼ÆËã¾«¶È
+% è®¡ç®—ç²¾åº¦
 
 
 [Acc,Sen,Spe]=accsenspe(yt(:,1),pred_labels);
@@ -200,51 +187,51 @@ end
 
 
 function [ACC,Sen,Spe]=accsenspe(true_labels,pred_labels)
-% ¼ÆËãÕæÑôĞÔ£¨True Positive£¬TP£©
+% è®¡ç®—çœŸé˜³æ€§ï¼ˆTrue Positiveï¼ŒTPï¼‰
 TP = sum((true_labels == 1) & (pred_labels == 1));
 
-% ¼ÆËã¼ÙÑôĞÔ£¨False Positive£¬FP£©
+% è®¡ç®—å‡é˜³æ€§ï¼ˆFalse Positiveï¼ŒFPï¼‰
 FP = sum((true_labels == 0) & (pred_labels == 1));
 
-% ¼ÆËãÕæÒõĞÔ£¨True Negative£¬TN£©
+% è®¡ç®—çœŸé˜´æ€§ï¼ˆTrue Negativeï¼ŒTNï¼‰
 TN = sum((true_labels == 0) & (pred_labels == 0));
 
-% ¼ÆËã¼ÙÒõĞÔ£¨False Negative£¬FN£©
+% è®¡ç®—å‡é˜´æ€§ï¼ˆFalse Negativeï¼ŒFNï¼‰
 FN = sum((true_labels == 1) & (pred_labels == 0));
 
-% ¼ÆËã×¼È·¶È£¨Accuracy£¬ACC£©
+% è®¡ç®—å‡†ç¡®åº¦ï¼ˆAccuracyï¼ŒACCï¼‰
 ACC = (TP + TN) / (TP + FP + TN + FN);
 
 
-% ¼ÆËãÃô¸Ğ¶È£¨Sensitivity£¬Sen£©
+% è®¡ç®—æ•æ„Ÿåº¦ï¼ˆSensitivityï¼ŒSenï¼‰
 Sen = TP / (TP + FN);
 
 
-% ¼ÆËãÌØÒì¶È£¨Specificity£¬Spe£©
+% è®¡ç®—ç‰¹å¼‚åº¦ï¼ˆSpecificityï¼ŒSpeï¼‰
 Spe = TN / (TN + FP);
 
 end
 
 function auc = calculate_auc(testLabels,predictedLabels)
-% ¼ÆËã¼ÙÑôĞÔÂÊ£¨FPR£©
+% è®¡ç®—å‡é˜³æ€§ç‡ï¼ˆFPRï¼‰
 fpr = sum((predictedLabels == 0) & (testLabels == 0)) / sum(testLabels == 0);
 
-% ¼ÆËãÕæÑôĞÔÂÊ£¨TPR£©
+% è®¡ç®—çœŸé˜³æ€§ç‡ï¼ˆTPRï¼‰
 tpr = sum((predictedLabels == 1) & (testLabels == 1)) / sum(testLabels == 1);
 
-% ¼ÆËãAUC
+% è®¡ç®—AUC
 auc = (tpr + fpr) / 2;
 end
 
 
 function W = constructW(fea)
-    % ¼ÆËã¾àÀë¾ØÕó
+    % è®¡ç®—è·ç¦»çŸ©é˜µ
     D = pdist2(fea, fea).^2;
     
-    % Ó¦ÓÃÖ¸ÊıºË
+    % åº”ç”¨æŒ‡æ•°æ ¸
     W = exp(-D);
     
-    % ½«¶Ô½ÇÏßÔªËØÉèÎª0
+    % å°†å¯¹è§’çº¿å…ƒç´ è®¾ä¸º0
     W = W - diag(diag(W));
 end
 
